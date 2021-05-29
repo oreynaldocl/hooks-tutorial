@@ -1,15 +1,15 @@
 import { useReducer } from 'react';
 import { Product as ProductModel } from './product.model';
 import './Product.css';
-import { TotalAction } from './totalAction.model';
-import { CartAction } from './cartAction.model';
+import { CartAction } from './cart-action.model';
 
 const currencyOptions = {
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
 };
 
-const getTotal = (total: number): string => {
+const getTotal = (cart: ProductModel[]): string => {
+  const total = cart.reduce((subTotal, prod) => subTotal + prod.price, 0);
   return total.toLocaleString(undefined, currencyOptions);
 }
 
@@ -31,24 +31,23 @@ const products: ProductModel[] = [
   }
 ];
 
-const cartReducer = (state: string[], { type, product }: CartAction): string[] => {
+const existsInCart = (cart: ProductModel[], product: ProductModel): boolean => {
+  return !!cart.find(item => item.name === product.name);
+}
+
+const cartReducer = (state: ProductModel[], { type, product }: CartAction): ProductModel[] => {
   switch (type) {
     case 'add': return [...state, product];
 
     case 'remove': {
+      const index = state.findIndex(item => item.name === product.name);
+      if (index < 0) {
+        return state;
+      }
       const updated = [...state];
-      updated.splice(updated.indexOf(product), 1);
+      updated.splice(index, 1);
       return updated;
     }
-
-    default: return state;
-  }
-}
-const totalReducer = (state: number, { type, price }: TotalAction): number => {
-  switch (type) {
-    case 'add': return state + price;
-
-    case 'remove': return state - price;
 
     default: return state;
   }
@@ -56,18 +55,13 @@ const totalReducer = (state: number, { type, price }: TotalAction): number => {
 
 export default function Product() {
   const [cart, setCart] = useReducer(cartReducer, []);
-  const [total, setTotal] = useReducer(totalReducer, 0);
 
-  const add = ({ name, price}: ProductModel): void => {
-    setCart({ product: name, type: 'add' });
-    setTotal({ price, type: 'add' });
+  const add = (product: ProductModel): void => {
+    setCart({ product, type: 'add' });
   };
 
-  const remove = ({ name, price}: ProductModel): void => {
-    if (cart.findIndex(item => item === name) >= 0) {
-      setCart({ product: name, type: 'remove' });
-      setTotal({ price, type: 'remove' });
-    }
+  const remove = (product: ProductModel): void => {
+    setCart({ product, type: 'remove' });
   };
 
 
@@ -76,7 +70,7 @@ export default function Product() {
       <div>
         Shopping Cart: {cart.length} total items.
       </div>
-      <div>Total: {getTotal(total)}</div>
+      <div>Total: {getTotal(cart)}</div>
       <div>
         {products.map(product => (
           <div key={product.name}>
@@ -94,6 +88,7 @@ export default function Product() {
               type="button"
               style={{backgroundColor: 'red', color: 'white', marginLeft: 4}}
               onClick={() => remove(product)}
+              disabled={!existsInCart(cart, product)}
             >
               X
             </button>

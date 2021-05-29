@@ -13,3 +13,8 @@
   border: black solid 1px;
   cursor: pointer;
 }
+
+.wrapper button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
