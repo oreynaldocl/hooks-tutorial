@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useReducer } from 'react';
 import { Product as ProductModel } from './product.model';
 import './Product.css';
 
@@ -29,13 +29,20 @@ const products: ProductModel[] = [
   }
 ];
 
+const cartReducer = (state: string[], product: string): string[] => {
+  return [...state, product];
+}
+const totalReducer = (state: number, price: number): number => {
+  return state + price;
+}
+
 export default function Product() {
-  const [cart, setCart] = useState<string[]>([]);
-  const [total, setTotal] = useState(0);
+  const [cart, setCart] = useReducer(cartReducer, []);
+  const [total, setTotal] = useReducer(totalReducer, 0);
 
   const add = (product: ProductModel): void => {
-    setCart(current => [...current, product.name]);
-    setTotal(current => current + product.price);
+    setCart(product.name);
+    setTotal(product.price);
   };
 
   return(
