@@ -1,4 +1,4 @@
-import { Fragment, useCallback } from 'react';
+import { Fragment, FunctionComponent, useCallback } from 'react';
 import { Product as ProductModel } from '../core/product.model';
 
 type ProductAction = (product: ProductModel) => void;
@@ -10,7 +10,7 @@ interface ProductProps {
   remove: ProductAction;
 }
 
-export default function Product({ disabled, product, add, remove }: ProductProps) {
+const Product: FunctionComponent<ProductProps> = ({ disabled, product, add, remove }: ProductProps) => {
   return(
     <Fragment>
       <div className="product">
@@ -41,3 +41,5 @@ export default function Product({ disabled, product, add, remove }: ProductProps
     </Fragment>
   );
 }
+
+export default Product;

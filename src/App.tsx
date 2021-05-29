@@ -1,5 +1,5 @@
 import './App.css';
-import Cart from './cart/Cart';
+import Cart from './Cart/Cart';
 
 function App() {
   return (

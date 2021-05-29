@@ -1,4 +1,4 @@
-import { useReducer } from 'react';
+import { FunctionComponent, useReducer } from 'react';
 import { cartReducer } from '../core/cart-store';
 import { Product as ProductModel } from '../core/product.model';
 import Product from '../Product/Product';
@@ -37,7 +37,7 @@ const products: ProductModel[] = [
   }
 ];
 
-export default function Cart() {
+const Cart: FunctionComponent = () => {
   const [cart, setCart] = useReducer(cartReducer, []);
 
   const add = (product: ProductModel): void => {
@@ -69,3 +69,5 @@ export default function Cart() {
     </div>
   );
 }
+
+export default Cart;
