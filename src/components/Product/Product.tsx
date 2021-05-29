@@ -1,6 +1,8 @@
 import { useReducer } from 'react';
 import { Product as ProductModel } from './product.model';
 import './Product.css';
+import { TotalAction } from './totalAction.model';
+import { CartAction } from './cartAction.model';
 
 const currencyOptions = {
   minimumFractionDigits: 2,
@@ -29,21 +31,45 @@ const products: ProductModel[] = [
   }
 ];
 
-const cartReducer = (state: string[], product: string): string[] => {
-  return [...state, product];
+const cartReducer = (state: string[], { type, product }: CartAction): string[] => {
+  switch (type) {
+    case 'add': return [...state, product];
+
+    case 'remove': {
+      const updated = [...state];
+      updated.splice(updated.indexOf(product), 1);
+      return updated;
+    }
+
+    default: return state;
+  }
 }
-const totalReducer = (state: number, price: number): number => {
-  return state + price;
+const totalReducer = (state: number, { type, price }: TotalAction): number => {
+  switch (type) {
+    case 'add': return state + price;
+
+    case 'remove': return state - price;
+
+    default: return state;
+  }
 }
 
 export default function Product() {
   const [cart, setCart] = useReducer(cartReducer, []);
   const [total, setTotal] = useReducer(totalReducer, 0);
 
-  const add = (product: ProductModel): void => {
-    setCart(product.name);
-    setTotal(product.price);
+  const add = ({ name, price}: ProductModel): void => {
+    setCart({ product: name, type: 'add' });
+    setTotal({ price, type: 'add' });
   };
+
+  const remove = ({ name, price}: ProductModel): void => {
+    if (cart.findIndex(item => item === name) >= 0) {
+      setCart({ product: name, type: 'remove' });
+      setTotal({ price, type: 'remove' });
+    }
+  };
+
 
   return(
     <div className="wrapper">
@@ -67,6 +93,7 @@ export default function Product() {
             <button
               type="button"
               style={{backgroundColor: 'red', color: 'white', marginLeft: 4}}
+              onClick={() => remove(product)}
             >
               X
             </button>
