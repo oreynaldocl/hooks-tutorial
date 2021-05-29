@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import './Product.css';
 
 const currencyOptions = {
@@ -31,11 +31,15 @@ export default function Product() {
       <button
         type="button"
         style={{backgroundColor: 'red', color: 'white', margin: '0 4px'}}
-        onClick={() => {
-          // Create new function everytime
-          setCart([]);
-          setTotal(0);
-        }}
+        onClick={useCallback(
+          () => {
+            // using useCallback will create a memoization based on params
+            // arrow function won't be created many times.
+            setCart([]);
+            setTotal(0);
+          },
+          [setCart, setTotal],
+        )}
       >
         Remove
       </button>
