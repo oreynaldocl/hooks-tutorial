@@ -1,4 +1,5 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
+import { Product as ProductModel } from './product.model';
 import './Product.css';
 
 const currencyOptions = {
@@ -10,13 +11,31 @@ const getTotal = (total: number): string => {
   return total.toLocaleString(undefined, currencyOptions);
 }
 
+const products: ProductModel[] = [
+  {
+    emoji: '🍦',
+    name: 'ice cream',
+    price: 5
+  },
+  {
+    emoji: '🍩',
+    name: 'donuts',
+    price: 2.5,
+  },
+  {
+    emoji: '🍉',
+    name: 'watermelon',
+    price: 4
+  }
+];
+
 export default function Product() {
   const [cart, setCart] = useState<string[]>([]);
   const [total, setTotal] = useState(0);
 
-  const add = () => {
-    setCart(['ice cream']);
-    setTotal(5);
+  const add = (product: ProductModel): void => {
+    setCart(current => [...current, product.name]);
+    setTotal(current => current + product.price);
   };
 
   return(
@@ -25,24 +44,28 @@ export default function Product() {
         Shopping Cart: {cart.length} total items.
       </div>
       <div>Total: {getTotal(total)}</div>
-
-      <div className="product"><span role="img" aria-label="ice cream">🍦</span></div>
-      <button type="button" onClick={add} >Add</button>
-      <button
-        type="button"
-        style={{backgroundColor: 'red', color: 'white', margin: '0 4px'}}
-        onClick={useCallback(
-          () => {
-            // using useCallback will create a memoization based on params
-            // arrow function won't be created many times.
-            setCart([]);
-            setTotal(0);
-          },
-          [setCart, setTotal],
-        )}
-      >
-        Remove
-      </button>
+      <div>
+        {products.map(product => (
+          <div key={product.name}>
+            <div className="product">
+              <span role="img" aria-label={product.name}>{product.emoji}</span>
+            </div>
+            <div>{JSON.stringify(product)}</div>
+            <button
+              type="button"
+              onClick={() => add(product)}
+            >
+              Add
+            </button>
+            <button
+              type="button"
+              style={{backgroundColor: 'red', color: 'white', marginLeft: 4}}
+            >
+              X
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
