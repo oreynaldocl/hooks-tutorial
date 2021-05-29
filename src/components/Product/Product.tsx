@@ -11,8 +11,13 @@ const getTotal = (total: number): string => {
 }
 
 export default function Product() {
-  const [cart] = useState<string[]>([]);
-  const [total] = useState(0);
+  const [cart, setCart] = useState<string[]>([]);
+  const [total, setTotal] = useState(0);
+
+  const add = () => {
+    setCart(['ice cream']);
+    setTotal(5);
+  };
 
   return(
     <div className="wrapper">
@@ -22,7 +27,18 @@ export default function Product() {
       <div>Total: {getTotal(total)}</div>
 
       <div className="product"><span role="img" aria-label="ice cream">🍦</span></div>
-      <button>Add</button> <button>Remove</button>
+      <button type="button" onClick={add} >Add</button>
+      <button
+        type="button"
+        style={{backgroundColor: 'red', color: 'white', margin: '0 4px'}}
+        onClick={() => {
+          // Create new function everytime
+          setCart([]);
+          setTotal(0);
+        }}
+      >
+        Remove
+      </button>
     </div>
   );
 }
